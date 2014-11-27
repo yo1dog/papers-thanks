@@ -3,7 +3,6 @@ package net.awesomebox.papersthanks;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 
 public class ImageDetector {
@@ -22,8 +21,6 @@ public class ImageDetector {
 	}
 	public boolean checkImage(BufferedImage image, int xOrigin, int yOrigin, float scale, Color[] positiveColors, Color[] negativeColors, int tolerance)
 	{
-		int[] pixelData = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
-		
 		// check all the positive points
 		for (int i = 0; i < positivePoints.length; ++i)
 		{
@@ -33,7 +30,7 @@ public class ImageDetector {
 			if (x >= image.getWidth() || y >= image.getHeight())
 				return false;
 			
-			int pixel = pixelData[y + image.getWidth() + x];
+			int pixel = image.getRGB(x, y);
 			
 			// check if the pixel is close to any of the valid positive colors
 			boolean colorFound = false;
@@ -64,7 +61,7 @@ public class ImageDetector {
 				return false;
 			}
 			
-			int pixel = pixelData[y + image.getWidth() + x];
+			int pixel = image.getRGB(x, y);
 			
 			// check if the pixel is close to any of the valid negative colors
 			boolean colorFound = false;
@@ -114,12 +111,10 @@ public class ImageDetector {
 	
 	
 	
-	public static final Color DETECTOR_IMAGE_POSITIVE_COLOR = new Color(6, 256, 9);
-	public static final Color DETECTOR_IMAGE_NEGATIVE_COLOR = new Color(6, 9, 256);
+	public static final Color DETECTOR_IMAGE_POSITIVE_COLOR = new Color(6, 255, 9);
+	public static final Color DETECTOR_IMAGE_NEGATIVE_COLOR = new Color(6, 9, 255);
 	
 	public static ImageDetector fromDetectorImage(BufferedImage image) {
-		int[] pixelData = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
-		
 		ArrayList<Point> positivePointsList = new ArrayList<Point>();
 		ArrayList<Point> negativePointsList = new ArrayList<Point>();
 		
@@ -130,7 +125,7 @@ public class ImageDetector {
 		{
 			for (int x = 0; x < image.getWidth(); ++x)
 			{
-				int pixel = pixelData[y * image.getWidth() + x];
+				int pixel = image.getRGB(x, y);
 				
 				if (pixel == positiveRGB)
 					positivePointsList.add(new Point(x, y));

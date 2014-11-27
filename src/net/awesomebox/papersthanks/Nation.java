@@ -2,7 +2,6 @@ package net.awesomebox.papersthanks;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 
 import net.awesomebox.papersthanks.utils.ImageUtil;
@@ -46,12 +45,11 @@ public class Nation
 		this.districts             = districts;
 		
 		
-		diplomaticSealDetectors = new ImageDetector[0];
-		passportColorARGB = new Color(255, 0, 0).getRed();
+		String pathName = name.substring(0, 1).toLowerCase() + name.substring(1).replace(" ", "");
 		
 		// TODO: move to Passport
 		// get passport diplomatic seal detectors
-		/*String dir = ImageUtil.IMAGES_DIR + ImageUtil.NATION_IMAGES_SUBDIR + this.name + "/" + ImageUtil.DIPLOMATIC_SEAL_IMAGES_SUBDIR + ImageUtil.DETECTOR_IMAGES_SUBDIR;
+		String dir = ImageUtil.IMAGES_DIR + ImageUtil.NATION_IMAGES_SUBDIR + pathName + "/" + ImageUtil.DIPLOMATIC_SEAL_IMAGES_SUBDIR + ImageUtil.DETECTOR_IMAGES_SUBDIR;
 		ArrayList<BufferedImage> diplomaticSealDetectorImages = ImageUtil.getDirectoryImages(dir);
 		
 		diplomaticSealDetectors = new ImageDetector[diplomaticSealDetectorImages.size()];
@@ -60,17 +58,15 @@ public class Nation
 		
 		
 		// get passport template
-		String filepath = ImageUtil.IMAGES_DIR + ImageUtil.NATION_IMAGES_SUBDIR + this.name + "/" + this.name + " Passport.png";
+		String filepath = ImageUtil.IMAGES_DIR + ImageUtil.NATION_IMAGES_SUBDIR + pathName + "/" + pathName + "Passport.png";
 		BufferedImage passportTemplateImage = ImageUtil.readImage(filepath);
-		
-		int[] pixelData = ((DataBufferInt)passportTemplateImage.getRaster().getDataBuffer()).getData();
 		
 		
 		// get passport color
-		passportColorARGB = pixelData[0];
+		passportColorARGB = passportTemplateImage.getRGB(0, 0);
 		
 		// get passport interrogate items
-		*/
+		
 		int _passportIDInterrogateItemX      = -1, _passportIDInterrogateItemY      = -1;
 		int _passportNameInterrogateItemX    = -1, _passportNameInterrogateItemY    = -1;
 		int _passportDOBInterrogateItemX     = -1, _passportDOBInterrogateItemY     = -1;
@@ -78,12 +74,12 @@ public class Nation
 		int _passportISSInterrogateItemX     = -1, _passportISSInterrogateItemY     = -1;
 		int _passportExpDateInterrogateItemX = -1, _passportExpDateInterrogateItemY = -1;
 		int _passportFaceInterrogateItemX    = -1, _passportFaceInterrogateItemY    = -1;
-		/*
+		
 		for (int y = 0; y < passportTemplateImage.getHeight(); ++y)
 		{
 			for (int x = 0; x < passportTemplateImage.getWidth(); ++x)
 			{
-				int pixel = pixelData[y * passportTemplateImage.getHeight() + x];
+				int pixel = passportTemplateImage.getRGB(x, y);
 				
 				if (pixel == PASSPORT_TEMPLATE_ID_INTERROGATE_ARGB)
 				{
@@ -123,14 +119,14 @@ public class Nation
 			}
 		}
 		
-		if (_passportIDInterrogateItemX      == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		if (_passportNameInterrogateItemX    == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		if (_passportDOBInterrogateItemX     == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		if (_passportSexInterrogateItemX     == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		if (_passportISSInterrogateItemX     == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		if (_passportExpDateInterrogateItemX == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		if (_passportFaceInterrogateItemX    == -1) throw new AssertionError("id interrogate point missing from teamplte for " + this.name);
-		*/
+		if (_passportIDInterrogateItemX      == -1) throw new AssertionError("ID interrogate point missing from passport teamplte for " + this.name);
+		if (_passportNameInterrogateItemX    == -1) throw new AssertionError("Name interrogate point missing from passport teamplte for " + this.name);
+		if (_passportDOBInterrogateItemX     == -1) throw new AssertionError("DOB interrogate point missing from passport teamplte for " + this.name);
+		if (_passportSexInterrogateItemX     == -1) throw new AssertionError("Sex interrogate point missing from passport teamplte for " + this.name);
+		if (_passportISSInterrogateItemX     == -1) throw new AssertionError("ISS interrogate point missing from passport teamplte for " + this.name);
+		if (_passportExpDateInterrogateItemX == -1) throw new AssertionError("Expiration Date interrogate point missing from passport teamplte for " + this.name);
+		if (_passportFaceInterrogateItemX    == -1) throw new AssertionError("Face interrogate point missing from passport teamplte for " + this.name);
+		
 		passportIDInterrogateItemX      = _passportIDInterrogateItemX;      passportIDInterrogateItemY      = _passportIDInterrogateItemY;
 		passportNameInterrogateItemX    = _passportNameInterrogateItemX;    passportNameInterrogateItemY    = _passportNameInterrogateItemY;
 		passportDOBInterrogateItemX     = _passportDOBInterrogateItemX;     passportDOBInterrogateItemY     = _passportDOBInterrogateItemY;
