@@ -58,7 +58,7 @@ public class Nation
 		
 		
 		// get passport template
-		String filepath = ImageUtil.IMAGES_DIR + ImageUtil.NATION_IMAGES_SUBDIR + pathName + "/" + pathName + "Passport.png";
+		String filepath = ImageUtil.IMAGES_DIR + ImageUtil.NATION_IMAGES_SUBDIR + pathName + "/" + pathName + "PassportTemplate.png";
 		BufferedImage passportTemplateImage = ImageUtil.readImage(filepath);
 		
 		

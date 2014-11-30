@@ -17,22 +17,20 @@ public class RuleBookMapPage extends RuleBookPage
 	{
 		super(ruleBook);
 		
-		antegriaLink         = new ClickPoint(this, 45,  57,  "Antegria link.");
-		arstotzkaLink        = new ClickPoint(this, 192, 90,  "Arstotzka link.");
-		imporLink            = new ClickPoint(this, 88,  136, "Impor link.");
-		kolechiaLink         = new ClickPoint(this, 158, 25,  "Kolechia link.");
-		obristanLink         = new ClickPoint(this, 64,  13,  "Obristan link.");
-		republiaLink         = new ClickPoint(this, 65,  99,  "Republia link.");
-		unitedFederationLink = new ClickPoint(this, 23,  128, "United Federation link.");
+		antegriaLink         = new ClickPoint(this, 45,  57,  "Rule book map page Antegria page link.");
+		arstotzkaLink        = new ClickPoint(this, 192, 90,  "Rule book map page Arstotzka page link.");
+		imporLink            = new ClickPoint(this, 88,  136, "Rule book map page Impor page link.");
+		kolechiaLink         = new ClickPoint(this, 158, 25,  "Rule book map page Kolechia page link.");
+		obristanLink         = new ClickPoint(this, 64,  13,  "Rule book map page Obristan page link.");
+		republiaLink         = new ClickPoint(this, 65,  99,  "Rule book map page Republia page link.");
+		unitedFederationLink = new ClickPoint(this, 23,  128, "Rule book map page United Federation page link.");
 	}
 	
 	@Override
-	public ClickSequence clickTo(int xRelToDocument, int yRelToDocument, String desc)
+	public ClickSequence clickTo()
 	{
-		ClickSequence clickSequence = ruleBook.tocPage.mapLink.clickTo();         // click map link on the TOC page
-		clickSequence.addClickEvent(click(xRelToDocument, yRelToDocument, desc)); // click given point in the TOC page
-		
-		return clickSequence;
+		// click map link on the TOC page
+		return ruleBook.tocPage.mapLink.clickThrough();
 	}
 	
 	public ClickPoint getLinkForNation(Nation nation)

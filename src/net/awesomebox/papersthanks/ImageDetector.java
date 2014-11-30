@@ -17,17 +17,21 @@ public class ImageDetector {
 	
 	public boolean checkImage(BufferedImage image, int xOrigin, int yOrigin, float scale, Color[] positiveColors, Color[] negativeColors)
 	{
-		return checkImage(image, xOrigin, yOrigin, scale, positiveColors, negativeColors, 20);
+		return checkImage(image, xOrigin, yOrigin, scale, positiveColors, negativeColors, 100);
 	}
 	public boolean checkImage(BufferedImage image, int xOrigin, int yOrigin, float scale, Color[] positiveColors, Color[] negativeColors, int tolerance)
 	{
+		// return false if we have no points to check
+		if (positivePoints.length == 0 && negativePoints.length == 0)
+			return false;
+		
 		// check all the positive points
 		for (int i = 0; i < positivePoints.length; ++i)
 		{
-			int x = Math.round(xOrigin + positivePoints[i].x * scale);
-			int y = Math.round(yOrigin + positivePoints[i].y * scale);
+			int x = Math.round((xOrigin + positivePoints[i].x) * scale);
+			int y = Math.round((yOrigin + positivePoints[i].y) * scale);
 			
-			if (x >= image.getWidth() || y >= image.getHeight())
+			if (x < 0 || y < 0 || x >= image.getWidth() || y >= image.getHeight())
 				return false;
 			
 			int pixel = image.getRGB(x, y);
@@ -36,7 +40,7 @@ public class ImageDetector {
 			boolean colorFound = false;
 			for (int j = 0; j < positiveColors.length; ++j)
 			{
-				int positivePixel = positiveColors[i].getRGB();
+				int positivePixel = positiveColors[j].getRGB();
 				
 				double diff = calculateColorDifference(pixel, positivePixel);
 				if (diff <= tolerance)
@@ -54,10 +58,10 @@ public class ImageDetector {
 		// check all the negative points
 		for (int i = 0; i < negativePoints.length; ++i)
 		{
-			int x = Math.round(xOrigin + negativePoints[i].x * scale);
-			int y = Math.round(yOrigin + negativePoints[i].y * scale);
+			int x = Math.round((xOrigin + negativePoints[i].x) * scale);
+			int y = Math.round((yOrigin + negativePoints[i].y) * scale);
 			
-			if (x >= image.getWidth() || y >= image.getHeight()) {
+			if (x < 0 || y < 0 || x >= image.getWidth() || y >= image.getHeight()) {
 				return false;
 			}
 			
@@ -67,7 +71,7 @@ public class ImageDetector {
 			boolean colorFound = false;
 			for (int j = 0; j < negativeColors.length; ++j)
 			{
-				int negativePixel = negativeColors[i].getRGB();
+				int negativePixel = negativeColors[j].getRGB();
 				
 				double diff = calculateColorDifference(pixel, negativePixel);
 				if (diff <= tolerance)
@@ -86,7 +90,8 @@ public class ImageDetector {
 	}
 	
 	
-	private static double calculateColorDifference(int pixel1, int pixel2) {
+	private static double calculateColorDifference(int pixel1, int pixel2)
+	{
 		int r1 = (pixel1 >> 16) & 0b00000000000000000000000011111111;
 		int g1 = (pixel1 >> 8)  & 0b00000000000000000000000011111111;
 		int b1 = (pixel1)       & 0b00000000000000000000000011111111;
@@ -114,24 +119,52 @@ public class ImageDetector {
 	public static final Color DETECTOR_IMAGE_POSITIVE_COLOR = new Color(6, 255, 9);
 	public static final Color DETECTOR_IMAGE_NEGATIVE_COLOR = new Color(6, 9, 255);
 	
-	public static ImageDetector fromDetectorImage(BufferedImage image) {
+	public static ImageDetector fromDetectorImage(BufferedImage image)
+	{
+		return fromDetectorImage(image, 0, 0, image.getWidth(), image.getHeight(), DETECTOR_IMAGE_POSITIVE_COLOR.getRGB(), DETECTOR_IMAGE_NEGATIVE_COLOR.getRGB());
+	}
+	public static ImageDetector fromDetectorImage(BufferedImage image, int sx, int sy, int swidth, int sheight, int positiveARGB, int negativeARGB)
+	{
+		return fromDetectorImage(image, sx, sy, swidth, sheight, positiveARGB, negativeARGB, 0, 0, 0, 0);
+	}
+	public static ImageDetector fromDetectorImage(BufferedImage image, int sx, int sy, int swidth, int sheight, int positiveARGB, int negativeARGB, int pleft, int ptop, int pright, int pbottom)
+	{
 		ArrayList<Point> positivePointsList = new ArrayList<Point>();
 		ArrayList<Point> negativePointsList = new ArrayList<Point>();
 		
-		int positiveRGB = DETECTOR_IMAGE_POSITIVE_COLOR.getRGB();
-		int negativeRGB = DETECTOR_IMAGE_NEGATIVE_COLOR.getRGB();
-		
-		for (int y = 0; y < image.getHeight(); ++y)
+		for (int y = 0; y < sheight; ++y)
 		{
-			for (int x = 0; x < image.getWidth(); ++x)
+			for (int x = 0; x < swidth; ++x)
 			{
-				int pixel = image.getRGB(x, y);
+				int pixel = image.getRGB(sx + x, sy + y);
 				
-				if (pixel == positiveRGB)
-					positivePointsList.add(new Point(x, y));
-				else if (pixel == negativeRGB)
-					negativePointsList.add(new Point(x, y));
+				if (pixel == positiveARGB)
+					positivePointsList.add(new Point(pleft + x, ptop + y));
+				else if (pixel == negativeARGB)
+					negativePointsList.add(new Point(pleft + x, ptop + y));
 			}
+		}
+		
+		for (int y = 0; y < ptop; ++y)
+		{
+			for (int x = 0; x < swidth; ++x)
+				negativePointsList.add(new Point(x, y));
+		}
+		for (int y = 0; y < pbottom; ++y)
+		{
+			for (int x = 0; x < swidth; ++x)
+				negativePointsList.add(new Point(x, ptop + sheight + y));
+		}
+		
+		for (int x = 0; x < pleft; ++x)
+		{
+			for (int y = 0; y < ptop + sheight + pbottom; ++y)
+				negativePointsList.add(new Point(x, y));
+		}
+		for (int x = 0; x < pright; ++x)
+		{
+			for (int y = 0; y < ptop + sheight + pbottom; ++y)
+				negativePointsList.add(new Point(pleft + swidth + x, y));
 		}
 		
 		return new ImageDetector(

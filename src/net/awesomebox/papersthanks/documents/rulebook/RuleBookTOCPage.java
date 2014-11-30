@@ -14,19 +14,17 @@ public class RuleBookTOCPage extends RuleBookPage
 	{
 		super(ruleBook);
 		
-		rulesLink        = new ClickPoint(this, 160, 47,  "Rules page link.");
-		mapLink          = new ClickPoint(this, 160, 64,  "Map page link.");
-		boothLink        = new ClickPoint(this, 160, 81,  "Booth page link.");
-		documentsLink    = new ClickPoint(this, 160, 98,  "Documents page link.");
-		confiscationLink = new ClickPoint(this, 160, 115, "Confiscation page link.");
+		rulesLink        = new ClickPoint(this, 160, 47,  "Rule book TOC page rules page link.");
+		mapLink          = new ClickPoint(this, 160, 64,  "Rule book TOC page map page link.");
+		boothLink        = new ClickPoint(this, 160, 81,  "Rule book TOC page booth page link.");
+		documentsLink    = new ClickPoint(this, 160, 98,  "Rule book TOC page documents page link.");
+		confiscationLink = new ClickPoint(this, 160, 115, "Rule book TOC page confiscation page link.");
 	}
 	
 	@Override
-	public ClickSequence clickTo(int xRelToDocument, int yRelToDocument, String desc)
+	public ClickSequence clickTo()
 	{
-		ClickSequence clickSequence = ruleBook.tocLink.clickTo();                 // click TOC link
-		clickSequence.addClickEvent(click(xRelToDocument, yRelToDocument, desc)); // click given point in the TOC page
-		
-		return clickSequence;
+		// click TOC link
+		return ruleBook.tocLink.clickThrough();                 
 	}
 }

@@ -4,13 +4,19 @@ import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
 
 
 // anything the user can interact with
-public interface Interface
+public abstract class Interface
 {
-	// returns a sequence of clicks that results in the given point in the interface being clicked on
-	public ClickSequence clickTo(int xRelToInterface, int yRelToInterface, String desc);
+	// returns a sequence of clicks that results in the interface being shown
+	public abstract ClickSequence clickTo();
+	
+	// returns a sequence of clicks that results in the interface being shown and the given point in the interface being clicked on
+	public final ClickSequence clickThrough(int xRelToInterface, int yRelToInterface, String desc)
+	{
+		return clickTo().add(click(xRelToInterface, yRelToInterface, desc));
+	}
 	
 	// returns a single click at the given point in the interface
-	public ClickEvent click(int xRelToInterface, int yRelToInterface, String desc);
+	public abstract ClickEvent click(int xRelToInterface, int yRelToInterface, String desc);
 	
 	
 	// a point in an interface that can be clicked
@@ -29,9 +35,13 @@ public interface Interface
 		}
 		
 		
-		public ClickSequence clickTo()
+		public ClickSequence clickThrough()
 		{
-			return _interface.clickTo(xRelToInterface, yRelToInterface, name);
+			return _interface.clickThrough(xRelToInterface, yRelToInterface, name);
+		}
+		public ClickEvent click()
+		{
+			return _interface.click(xRelToInterface, yRelToInterface, name);
 		}
 	}
 }

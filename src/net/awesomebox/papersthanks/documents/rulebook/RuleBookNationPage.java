@@ -18,26 +18,24 @@ public class RuleBookNationPage extends RuleBookPage
 		
 		this.nation = nation;
 		
-		issuingCitiesIterrogateItem = new InterrogateItem(this, 150,  100, nation.name + " issuing cities.");
+		issuingCitiesIterrogateItem = new InterrogateItem(this, 150,  100, "Rule book " + nation.name + " page issuing cities.");
 		
 		if (nation == Nation.Arstotzka)
 		{
 			diplomaticSealsIterrogateItem = null;
-			districtsIterrogateItem       = new InterrogateItem(this, 63,  100, nation.name + " districts.");
+			districtsIterrogateItem       = new InterrogateItem(this, 63,  100, "Rule book " + nation.name + " page districts.");
 		}
 		else
 		{
-			diplomaticSealsIterrogateItem = new InterrogateItem(this, 63,  100, nation.name + " diplomatic seals.");
+			diplomaticSealsIterrogateItem = new InterrogateItem(this, 63,  100, "Rule book " + nation.name + " page diplomatic seals.");
 			districtsIterrogateItem       = null;
 		}
 	}
 	
 	@Override
-	public ClickSequence clickTo(int xRelToDocument, int yRelToDocument, String desc)
+	public ClickSequence clickTo()
 	{
-		ClickSequence clickSequence = ruleBook.mapPage.getLinkForNation(nation).clickTo(); // click link for this nation on the map page
-		clickSequence.addClickEvent(click(xRelToDocument, yRelToDocument, desc));          // click given point in the TOC page
-		
-		return clickSequence;
+		// click link for this nation on the map page
+		return ruleBook.mapPage.getLinkForNation(nation).clickThrough();
 	}
 }

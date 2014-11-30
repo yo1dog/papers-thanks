@@ -1,12 +1,17 @@
 package net.awesomebox.papersthanks.utils;
 
-import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+
+import net.awesomebox.papersthanks.ui.VirtualUser;
 
 public class ImageUtil
 {
@@ -17,6 +22,11 @@ public class ImageUtil
 	public static final String FACE_IMAGES_SUBDIR            = "faces/";
 	public static final String DIPLOMATIC_SEAL_IMAGES_SUBDIR = "diplomaticSeals/";
 	public static final String DETECTOR_IMAGES_SUBDIR        = "detectors/";
+	
+	public static final String FONTS_DIR = "assets/fonts/";
+	
+	
+	private final static Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	
 	
 	// gets all valid, invalid, and detector images from a directory
@@ -69,12 +79,40 @@ public class ImageUtil
 	}
 	
 	
-	public static Color convertPixelToColor(int pixel)
+	
+	public static BufferedImage takeSnapshot(int x, int y, int width, int height)
 	{
-		int r = (pixel >> 16) & 0b00000000000000000000000011111111;
-		int g = (pixel >> 8)  & 0b00000000000000000000000011111111;
-		int b = (pixel)       & 0b00000000000000000000000011111111;
+		int s = 2;
 		
-		return new Color(r, g, b);
+		VirtualUser.sendScreenShotCommand();
+		
+		// get image from clipboard
+		if (!clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor))
+			throw new AssertionError("Attempting to get image from clipboard when clipboard does not contain an image.");
+		
+		BufferedImage image;
+		try
+		{
+			image = (BufferedImage)clipboard.getData(DataFlavor.imageFlavor);
+		}
+		catch (UnsupportedFlavorException | IOException e)
+		{
+			throw new AssertionError("Error getting image from clipboard after screenshot.", e);
+		}
+		
+		
+		image = image.getSubimage(8 + x*s, 30 + y*s, width*s, height*s);
+		
+		File outputfile = new File("testscreen.png");
+	    try
+		{
+			ImageIO.write(image, "png", outputfile);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	    
+	    return image;
 	}
 }

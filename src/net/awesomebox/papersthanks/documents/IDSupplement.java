@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.Date;
 
 import net.awesomebox.papersthanks.FingerPrint;
+import net.awesomebox.papersthanks.ui.Desk;
 import net.awesomebox.papersthanks.ui.WorkView;
 import net.awesomebox.papersthanks.utils.DateUtil;
 import net.awesomebox.papersthanks.utils.HeightUtil;
@@ -11,6 +12,9 @@ import net.awesomebox.papersthanks.utils.WeightUtil;
 
 public class IDSupplement extends Document
 {
+	public static final int WIDTH  = 90;
+	public static final int HEIGHT = 150;
+	
 	public final int         heightCM;
 	public final int         weightKG;
 	public final String      description;
@@ -18,6 +22,10 @@ public class IDSupplement extends Document
 	public final Date        expDate;
 	
 	IDSupplement(
+		Desk desk,
+		int xRelToDesk,
+		int yRelToDesk,
+		
 		String        heightStr,
 		String        weightStr,
 		String        description,
@@ -25,7 +33,7 @@ public class IDSupplement extends Document
 		String        expDateStr
 	)
 	{
-		super(90, 150);
+		super(desk, xRelToDesk, yRelToDesk, WIDTH, HEIGHT);
 		
 		this.heightCM    = HeightUtil.parseHeight(heightStr);
 		this.weightKG    = WeightUtil.parseHeight(weightStr);

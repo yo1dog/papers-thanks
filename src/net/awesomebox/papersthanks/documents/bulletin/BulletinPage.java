@@ -1,28 +1,28 @@
-package net.awesomebox.papersthanks.documents.rulebook;
+package net.awesomebox.papersthanks.documents.bulletin;
 
 import net.awesomebox.papersthanks.ui.ClickSequence;
 import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
 import net.awesomebox.papersthanks.ui.Interface;
 
-public abstract class RuleBookPage extends Interface
+public abstract class BulletinPage extends Interface
 {
-	protected final RuleBook ruleBook;
+	protected final Bulletin bulletin;
 	
-	protected RuleBookPage(RuleBook ruleBook)
+	protected BulletinPage(Bulletin bulletin)
 	{
-		this.ruleBook = ruleBook;
+		this.bulletin = bulletin;
 	}
 	
 	
 	@Override
 	public ClickSequence clickTo()
 	{
-		return ruleBook.clickTo();
+		return bulletin.clickTo();
 	}
 	
 	@Override
 	public ClickEvent click(int xRelToDocument, int yRelToDocument, String desc)
 	{
-		return ruleBook.click(xRelToDocument, yRelToDocument, desc);
+		return bulletin.click(xRelToDocument, yRelToDocument, desc);
 	}
 }

@@ -4,12 +4,16 @@ import java.util.Date;
 
 import net.awesomebox.papersthanks.Nation;
 import net.awesomebox.papersthanks.Name;
+import net.awesomebox.papersthanks.ui.Desk;
 import net.awesomebox.papersthanks.utils.DateUtil;
 import net.awesomebox.papersthanks.utils.HeightUtil;
 import net.awesomebox.papersthanks.utils.WeightUtil;
 
 public class ArstotzkanIDCard extends Document
 {
+	public static final int WIDTH  = 126;
+	public static final int HEIGHT = 71;
+	
 	public final String district;
 	public final Name   name;
 	public final Date   dob;
@@ -17,6 +21,10 @@ public class ArstotzkanIDCard extends Document
 	public final int    weightKG;
 	
 	ArstotzkanIDCard(
+		Desk desk,
+		int xRelToDesk,
+		int yRelToDesk,
+		
 		String district,
 		String nameStr,
 		String dobStr,
@@ -24,7 +32,7 @@ public class ArstotzkanIDCard extends Document
 		String weightStr
 	)
 	{
-		super(126, 71);
+		super(desk, xRelToDesk, yRelToDesk, WIDTH, HEIGHT);
 		
 		this.district = district;
 		this.name     = Name.fromFullName(nameStr);

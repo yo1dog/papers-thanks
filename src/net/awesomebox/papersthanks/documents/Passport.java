@@ -1,15 +1,12 @@
 package net.awesomebox.papersthanks.documents;
 
-import java.awt.Color;
-import java.text.DateFormat;
 import java.util.Date;
 
 import net.awesomebox.papersthanks.Face;
 import net.awesomebox.papersthanks.Nation;
 import net.awesomebox.papersthanks.Name;
 import net.awesomebox.papersthanks.Sex;
-import net.awesomebox.papersthanks.ui.BoothWindow;
-import net.awesomebox.papersthanks.ui.DeskClock;
+import net.awesomebox.papersthanks.ui.Desk;
 import net.awesomebox.papersthanks.ui.InterrogateItem;
 import net.awesomebox.papersthanks.ui.WorkView;
 import net.awesomebox.papersthanks.ui.InterrogateItem.InterrogateItemSet;
@@ -17,6 +14,9 @@ import net.awesomebox.papersthanks.utils.DateUtil;
 
 public class Passport extends Document
 {
+	public static final int WIDTH  = 130;
+	public static final int HEIGHT = 162;
+	
 	public final Nation nation;
 	public final String	id;
 	public final Name   name;
@@ -36,8 +36,11 @@ public class Passport extends Document
 	public final InterrogateItem faceInterrogateItem;
 	
 	
-	// TODO: temp, should be default
-	public Passport(
+	Passport(
+		Desk desk,
+		int xRelToDesk,
+		int yRelToDesk,
+		
 		int    colorARGB,
 		String id,
 		String nameStr,
@@ -47,7 +50,7 @@ public class Passport extends Document
 		String expDateStr
 	)
 	{
-		super(130, 162);
+		super(desk, xRelToDesk, yRelToDesk, WIDTH, HEIGHT);
 		
 		this.nation  = Nation.fromPassportColor(colorARGB);
 		this.id      = id;
@@ -91,6 +94,11 @@ public class Passport extends Document
 	// Passport-WrongExpiration
 	public static class PassportExpiredError extends PassportError { public PassportExpiredError(Passport passport) {
 		super(passport, "Expired.", new InterrogateItemSet(passport.expDateInterrogateItem, WorkView.deskClock.interrogateItem));
+	}}
+	
+	// Passport-WrongGender
+	public static class PassportWrongGenderError extends PassportError { public PassportWrongGenderError(Passport passport) {
+		super(passport, "Wrong Gender.", new InterrogateItemSet(passport.sexInterrogateItem, WorkView.deskClock.interrogateItem));
 	}}
 	
 	public DocumentError verify()

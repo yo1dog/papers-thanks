@@ -4,7 +4,7 @@ import java.util.Date;
 
 import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
 
-public class DeskClock implements Interface
+public class DeskClock extends Interface
 {
 	public final InterrogateItem interrogateItem;
 	
@@ -12,7 +12,7 @@ public class DeskClock implements Interface
 	
 	DeskClock()
 	{
-		interrogateItem = new InterrogateItem(this, UI.clockArea.width / 2, UI.clockArea.height / 2, "Desk clock.");
+		interrogateItem = new InterrogateItem(this, WorkView.clockArea.width / 2, WorkView.clockArea.height / 2, "Desk clock.");
 	}
 	
 	
@@ -37,16 +37,16 @@ public class DeskClock implements Interface
 	
 	
 	@Override
-	public ClickSequence clickTo(int xRelToClock, int yRelToClock, String desc)
+	public ClickSequence clickTo()
 	{
-		return new ClickSequence(click(xRelToClock, yRelToClock, desc));
+		return new ClickSequence();
 	}
 	
 	@Override
 	public ClickEvent click(int xRelToClock, int yRelToClock, String desc)
 	{
-		int x = UI.clockArea.x + xRelToClock;
-		int y = UI.clockArea.y + yRelToClock;
+		int x = WorkView.clockArea.x + xRelToClock;
+		int y = WorkView.clockArea.y + yRelToClock;
 		return new ClickEvent(x, y, desc);
 	}
 }

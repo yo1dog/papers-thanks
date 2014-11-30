@@ -3,7 +3,7 @@ package net.awesomebox.papersthanks.ui;
 import net.awesomebox.papersthanks.Face;
 import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
 
-public class BoothWindow implements Interface
+public class BoothWindow extends Interface
 {
 	private static final int MAX_HEIGHT_DIFFERENCE_CM = 4;
 	
@@ -15,7 +15,7 @@ public class BoothWindow implements Interface
 	
 	BoothWindow()
 	{
-		interrogateItem = new InterrogateItem(this, UI.windowArea.width / 2, UI.windowArea.height / 2, "Booth window.");
+		interrogateItem = new InterrogateItem(this, WorkView.windowArea.width / 2, WorkView.windowArea.height / 2, "Booth window.");
 	}
 	
 	
@@ -46,16 +46,16 @@ public class BoothWindow implements Interface
 	
 	
 	@Override
-	public ClickSequence clickTo(int xRelToBoothWindow, int yRelToBoothWindow, String desc)
+	public ClickSequence clickTo()
 	{
-		return new ClickSequence(click(xRelToBoothWindow, yRelToBoothWindow, desc));
+		return new ClickSequence();
 	}
 	
 	@Override
 	public ClickEvent click(int xRelToBoothWindow, int yRelToBoothWindow, String desc)
 	{
-		int x = UI.windowArea.x + xRelToBoothWindow;
-		int y = UI.windowArea.y + yRelToBoothWindow;
+		int x = WorkView.windowArea.x + xRelToBoothWindow;
+		int y = WorkView.windowArea.y + yRelToBoothWindow;
 		return new ClickEvent(x, y, desc);
 	}
 }

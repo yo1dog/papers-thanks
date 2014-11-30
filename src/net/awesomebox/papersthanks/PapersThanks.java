@@ -1,41 +1,35 @@
 package net.awesomebox.papersthanks;
 
-import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 
-import net.awesomebox.papersthanks.documents.Document.DocumentError;
-import net.awesomebox.papersthanks.documents.DocumentOrganizer;
-import net.awesomebox.papersthanks.documents.Passport;
-import net.awesomebox.papersthanks.documents.rulebook.RuleBook;
-import net.awesomebox.papersthanks.documents.rulebook.RuleBookDocumetLinkType;
+import net.awesomebox.papersthanks.ui.Font;
+import net.awesomebox.papersthanks.ui.MenuView;
+import net.awesomebox.papersthanks.ui.TextReader;
 import net.awesomebox.papersthanks.ui.WorkView;
+import net.awesomebox.papersthanks.utils.ImageUtil;
 
 public class PapersThanks
 {
-	public static void main(String[] args) throws AWTException, InterruptedException
+	public static void main(String[] args)
 	{
-		RuleBook ruleBook = new RuleBook(new Rule[] {}, new RuleBookDocumetLinkType[] {});
-		WorkView.desk.setRuleBook(ruleBook);
+		ClickPreviewView.show();
 		
-		Passport passport = new Passport(
-			Nation.Arstotzka.passportColorARGB,
-			"some-id",
-			"some name",
-			"11.21.98",
-			"m",
-			"invalid iss",
-			"11.22.98");
+		// click resume
+		MenuView.clickResume();
 		
-		DocumentOrganizer.placeDocument(passport, 0, 0);
-		DocumentOrganizer.placeDocument(ruleBook, 0, 0);
+		WorkView.init();
 		
-		DocumentError error = passport.verify();
+		/*BufferedImage image = ImageUtil.readImage("testscreen.png");
 		
-		System.out.println("Item 1 Click Sequence");
-		System.out.println(error.interrogateItems.item1.clickTo());
+		long start = System.currentTimeMillis();
 		
-		System.out.println();
-		System.out.println("---------------------");
-		System.out.println("Item 2 Click Sequence");
-		System.out.println(error.interrogateItems.item2.clickTo());
+		Point origin = new Point(22, 103);
+		String str = TextReader.readTextNear(Font.bm_mini_a8_6, image, new Color(87, 72, 72), new Color(228, 230, 189), origin);
+		
+		System.out.println("str: \"" + str + "\"");
+		System.out.println(origin);
+		System.out.println(System.currentTimeMillis() - start);*/
 	}
 }

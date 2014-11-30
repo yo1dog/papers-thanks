@@ -66,9 +66,20 @@ public class ClickSequence
 	}
 	
 	
-	public void addClickEvent(ClickEvent event)
+	public ClickSequence add(ClickEvent event)
 	{
 		clickEvents.add(event);
+		return this;
+	}
+	
+	public ClickEvent[] getClickEvents()
+	{
+		return clickEvents.toArray(new ClickEvent[clickEvents.size()]);
+	}
+	
+	public void execute()
+	{
+		VirtualUser.executeClickSequence(this);
 	}
 	
 	
@@ -80,6 +91,7 @@ public class ClickSequence
 		
 		return new ClickSequence(clickEvents);
 	}
+	
 	
 	@Override
 	public String toString()
