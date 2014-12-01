@@ -3,8 +3,7 @@ package net.awesomebox.papersthanks.ui;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
-
-import com.sun.glass.events.KeyEvent;
+import java.awt.event.KeyEvent;
 
 import net.awesomebox.papersthanks.ClickPreviewView;
 import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
