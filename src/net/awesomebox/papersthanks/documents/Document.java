@@ -1,26 +1,19 @@
 package net.awesomebox.papersthanks.documents;
 
+import net.awesomebox.papersthanks.EntryError;
 import net.awesomebox.papersthanks.ui.Desk;
 import net.awesomebox.papersthanks.ui.InterrogateItem.InterrogateItemSet;
 import net.awesomebox.papersthanks.ui.ItemOnDesk;
 
 public abstract class Document extends ItemOnDesk
 {
-	public static abstract class DocumentError
+	public static class DocumentError extends EntryError
 	{
-		public final String message;
-		public final InterrogateItemSet interrogateItems;
+		private static final long serialVersionUID = 1L;
 		
 		public DocumentError(String message, InterrogateItemSet interrogateItems)
 		{
-			this.message = message;
-			this.interrogateItems = interrogateItems;
-		}
-		
-		@Override
-		public String toString()
-		{
-			return this.getClass().getName() + ": " + message;
+			super(message, interrogateItems);
 		}
 	}
 	

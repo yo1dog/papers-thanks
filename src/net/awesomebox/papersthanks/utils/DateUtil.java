@@ -13,23 +13,16 @@ public class DateUtil
 	private static SimpleDateFormat longDateFormat  = new SimpleDateFormat(longDateFormatStr);
 	
 	
-	public static Date parseDate(String dateStr) {
+	public static Date parseDate(String dateStr) throws ParseException, IllegalArgumentException {
 		SimpleDateFormat format;
 		if (dateStr.length() == shortDateFormatStr.length())
 			format = shortDateFormat;
 		else if (dateStr.length() == longDateFormatStr.length())
 			format = longDateFormat;
 		else
-			return null;
+			throw new IllegalArgumentException("Date string length is invalid.");
 		
-		try
-		{
-			return format.parse(dateStr);
-		}
-		catch (ParseException e)
-		{
-			return null;
-		}
+		return format.parse(dateStr);
 	}
 	
 	public static String toString(Date date)

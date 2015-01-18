@@ -28,26 +28,26 @@ public class Font
 	public final int lineHeight;
 	public final int ascenderLine;
 	public final int descenderLine;
-	public final int spaceXAdvance;
+	public final int xSpaceAdvance;
+	public final boolean hasSpace;
 	public final FontChar[] chars;
 	
-	private Font(int lineHeight, int ascenderLine, int descenderLine, int spaceXAdvance, FontChar[] chars)
+	private Font(int lineHeight, int ascenderLine, int descenderLine, int xSpaceAdvance, FontChar[] chars)
 	{
 		this.lineHeight    = lineHeight;
 		this.ascenderLine  = ascenderLine;
 		this.descenderLine = descenderLine;
-		this.spaceXAdvance = spaceXAdvance;
+		this.xSpaceAdvance = xSpaceAdvance;
+		this.hasSpace = xSpaceAdvance > -1;
+		
 		this.chars         = chars;
 	}
 	
-	public int getCharIndex(char c)
-	{
-		return c + ARRAY_VALUE_OFFSET;
-	}
 	
 	
-	
-	public static final Font bm_mini_a8_6 = loadFont("bm_mini_a8_6");
+	public static final Font bm_mini_a8_6     = loadFont("bm_mini_a8_6");
+	public static final Font _04b03_regular_6 = loadFont("04b03_regular_6");
+	public static final Font digits           = loadFont("Digits");
 	
 	
 	
@@ -67,7 +67,7 @@ public class Font
 		BufferedImage charImageMap = ImageUtil.readImage(ImageUtil.FONTS_DIR + name + ".bmp");
 		
 		int lineHeight = Integer.parseInt(xmlDoc.getElementsByTagName("common").item(0).getAttributes().getNamedItem("lineHeight").getNodeValue());
-		int spaceXAdvance = -1;
+		int xSpaceAdvance = -1;
 		int ascenderLine  = lineHeight;
 		int descenderLine = 0;
 		
@@ -78,6 +78,12 @@ public class Font
 		for (int i = 0; i < fntChars.length; ++i)
 		{
 			FNTChar fntChar = new FNTChar(charNodes.item(i).getAttributes());
+			
+			if ((char)fntChar.id == ' ')
+			{
+				xSpaceAdvance = fntChar.xAdvance;
+				continue;
+			}
 			
 			int ascender = fntChar.yOffset;
 			if (ascender < ascenderLine)
@@ -90,39 +96,35 @@ public class Font
 			fntChars[i] = fntChar;
 		}
 		
-		
 		FontChar[] chars = new FontChar[95];
 		for (int i = 0; i < fntChars.length; ++i)
 		{
 			FNTChar fntChar = fntChars[i];
-			
-			char value = (char)fntChar.id;
-			
-			if (value == ' ')
-			{
-				spaceXAdvance = fntChar.xAdvance;
+			if (fntChar == null)
 				continue;
-			}
 			
 			ImageDetector imageDetector = ImageDetector.fromDetectorImage(
 				charImageMap,
 				fntChar.x, fntChar.y,
 				fntChar.width, fntChar.height,
 				CHAR_POSITIVE_ARGB, CHAR_NEGATIVE_ARGB,
-				fntChar.xOffset, fntChar.yOffset - ascenderLine,
+				fntChar.xOffset + 1, fntChar.yOffset - ascenderLine, // always add 1 padding to the left for left-aligned reading
 				fntChar.xAdvance - (fntChar.xOffset + fntChar.width), descenderLine - (fntChar.yOffset + fntChar.height)
 			);
 			
+			int trailingSpace = fntChar.xAdvance - (fntChar.xOffset + fntChar.width);
+			
 			chars[fntChar.id + ARRAY_VALUE_OFFSET] = new FontChar(
-				value,
+				(char)fntChar.id,
 				fntChar.width, fntChar.height,
 				fntChar.xOffset, fntChar.yOffset,
 				fntChar.xAdvance,
+				xSpaceAdvance == -1? -1 : xSpaceAdvance - trailingSpace,
 				imageDetector
 			);
 		}
 		
-		return new Font(lineHeight, ascenderLine, descenderLine, spaceXAdvance, chars);
+		return new Font(lineHeight, ascenderLine, descenderLine, xSpaceAdvance, chars);
 	}
 	
 	
@@ -157,6 +159,7 @@ public class Font
 		public final int width, height;
 		public final int xOffset, yOffset;
 		public final int xAdvance;
+		public final int xSpaceAdvance;
 		
 		public final ImageDetector imageDetector;
 		
@@ -165,6 +168,7 @@ public class Font
 			int width, int height,
 			int xOffset, int yOffset,
 			int xAdvance,
+			int xSpaceAdvance,
 			ImageDetector imageDetector
 		)
 		{
@@ -176,7 +180,8 @@ public class Font
 			this.xOffset  = xOffset;
 			this.yOffset  = yOffset;
 			
-			this.xAdvance = xAdvance;
+			this.xAdvance      = xAdvance;
+			this.xSpaceAdvance = xSpaceAdvance;
 			
 			this.imageDetector = imageDetector;
 		}

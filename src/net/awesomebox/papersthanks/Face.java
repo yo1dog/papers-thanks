@@ -27,7 +27,7 @@ public class Face
 		
 		
 		// image detector
-		String filepath = ImageUtil.IMAGES_DIR + ImageUtil.FACE_IMAGES_SUBDIR + this.id + "/" + this.id + " Detector.png";
+		String filepath = ImageUtil.IMAGES_DIR + "faces/" + this.id + "/" + this.id + "Detector.png";
 		imageDetector = ImageDetector.fromDetectorImage(ImageUtil.readImage(filepath));
 	}
 	

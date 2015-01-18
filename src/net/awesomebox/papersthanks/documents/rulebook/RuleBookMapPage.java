@@ -1,7 +1,7 @@
 package net.awesomebox.papersthanks.documents.rulebook;
 
 import net.awesomebox.papersthanks.Nation;
-import net.awesomebox.papersthanks.ui.ClickSequence;
+import net.awesomebox.papersthanks.ui.MouseSequence;
 
 public class RuleBookMapPage extends RuleBookPage
 {
@@ -27,7 +27,7 @@ public class RuleBookMapPage extends RuleBookPage
 	}
 	
 	@Override
-	public ClickSequence clickTo()
+	public MouseSequence clickTo()
 	{
 		// click map link on the TOC page
 		return ruleBook.tocPage.mapLink.clickThrough();

@@ -5,7 +5,15 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import net.awesomebox.papersthanks.utils.ImageUtil;
+
 public class ImageDetector {
+	public static final Color DETECTOR_IMAGE_POSITIVE_COLOR = new Color(34, 177, 76); // green
+	public static final Color DETECTOR_IMAGE_NEGATIVE_COLOR = new Color(237, 38, 36); // red
+	
+	public static final int DEFAULT_SQR_DIST  = 6;
+	public static final int DEFAULT_TOLERANCE = 100;
+	
 	public final Point[] positivePoints; // pixels that should be occupied
 	public final Point[] negativePoints; // pixels that should not be occupied
 	
@@ -15,11 +23,44 @@ public class ImageDetector {
 		this.negativePoints = negativePoints;
 	}
 	
-	public boolean checkImage(BufferedImage image, int xOrigin, int yOrigin, float scale, Color[] positiveColors, Color[] negativeColors)
+	
+	public boolean checkImageNear(BufferedImage image, Color[] positiveColors, Color[] negativeColors, Point origin, int scale)
 	{
-		return checkImage(image, xOrigin, yOrigin, scale, positiveColors, negativeColors, 100);
+		return checkImageNear(image, positiveColors, negativeColors, origin, scale, DEFAULT_TOLERANCE, DEFAULT_SQR_DIST);
 	}
-	public boolean checkImage(BufferedImage image, int xOrigin, int yOrigin, float scale, Color[] positiveColors, Color[] negativeColors, int tolerance)
+	public boolean checkImageNear(BufferedImage image, Color[] positiveColors, Color[] negativeColors, Point origin, int scale, int tolerance, int sqrDist)
+	{
+		// try the origin first
+		boolean matches = checkImage(image, positiveColors, negativeColors, origin, scale, tolerance);
+		
+		if (matches)
+			return true;
+		
+		for (int yOffset = 0; yOffset < sqrDist; ++yOffset)
+		{
+			for (int xOffset = 0; xOffset < sqrDist; ++xOffset)
+			{
+				Point newOrigin = new Point(origin.x + xOffset - (sqrDist / 2), origin.y + yOffset - (sqrDist / 2));
+				
+				matches = checkImage(image, positiveColors, negativeColors, newOrigin, scale, tolerance);
+				if (matches)
+				{
+					origin.x = newOrigin.x;
+					origin.y = newOrigin.y;
+					
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean checkImage(BufferedImage image, Color[] positiveColors, Color[] negativeColors, Point point, int scale)
+	{
+		return checkImage(image, positiveColors, negativeColors, point, scale, DEFAULT_TOLERANCE);
+	}
+	public boolean checkImage(BufferedImage image, Color[] positiveColors, Color[] negativeColors, Point point, int scale, int tolerance)
 	{
 		// return false if we have no points to check
 		if (positivePoints.length == 0 && negativePoints.length == 0)
@@ -28,8 +69,8 @@ public class ImageDetector {
 		// check all the positive points
 		for (int i = 0; i < positivePoints.length; ++i)
 		{
-			int x = Math.round((xOrigin + positivePoints[i].x) * scale);
-			int y = Math.round((yOrigin + positivePoints[i].y) * scale);
+			int x = (point.x + positivePoints[i].x) * scale;
+			int y = (point.y + positivePoints[i].y) * scale;
 			
 			if (x < 0 || y < 0 || x >= image.getWidth() || y >= image.getHeight())
 				return false;
@@ -42,7 +83,7 @@ public class ImageDetector {
 			{
 				int positivePixel = positiveColors[j].getRGB();
 				
-				double diff = calculateColorDifference(pixel, positivePixel);
+				double diff = ImageUtil.calculateColorDifference(pixel, positivePixel);
 				if (diff <= tolerance)
 				{
 					colorFound = true;
@@ -58,8 +99,8 @@ public class ImageDetector {
 		// check all the negative points
 		for (int i = 0; i < negativePoints.length; ++i)
 		{
-			int x = Math.round((xOrigin + negativePoints[i].x) * scale);
-			int y = Math.round((yOrigin + negativePoints[i].y) * scale);
+			int x = (point.x + negativePoints[i].x) * scale;
+			int y = (point.y + negativePoints[i].y) * scale;
 			
 			if (x < 0 || y < 0 || x >= image.getWidth() || y >= image.getHeight()) {
 				return false;
@@ -73,7 +114,7 @@ public class ImageDetector {
 			{
 				int negativePixel = negativeColors[j].getRGB();
 				
-				double diff = calculateColorDifference(pixel, negativePixel);
+				double diff = ImageUtil.calculateColorDifference(pixel, negativePixel);
 				if (diff <= tolerance)
 				{
 					colorFound = true;
@@ -90,34 +131,6 @@ public class ImageDetector {
 	}
 	
 	
-	private static double calculateColorDifference(int pixel1, int pixel2)
-	{
-		int r1 = (pixel1 >> 16) & 0b00000000000000000000000011111111;
-		int g1 = (pixel1 >> 8)  & 0b00000000000000000000000011111111;
-		int b1 = (pixel1)       & 0b00000000000000000000000011111111;
-		
-		int r2 = (pixel2 >> 16) & 0b00000000000000000000000011111111;
-		int g2 = (pixel2 >> 8)  & 0b00000000000000000000000011111111;
-		int b2 = (pixel2)       & 0b00000000000000000000000011111111;
-		
-		// the difference between two colors is really a 3D problem.
-		// each color value (red, green, and blue) is an axis (X, Y, Z). A
-		// color is a 3D position on these axis. So the distance between two
-		// colors is the distance between their 3D points. So we use the
-		// distance formula:
-		// sqrt((X2-X1)^2, (Y2-Y1)^2, (Z2-Z1)^2)
-		return Math.sqrt(
-			(r2 - r1)*(r2 - r1) +
-			(g2 - g1)*(g2 - g1) +
-			(b2 - b1)*(b2 - b1)
-		);
-	}
-	
-	
-	
-	
-	public static final Color DETECTOR_IMAGE_POSITIVE_COLOR = new Color(6, 255, 9);
-	public static final Color DETECTOR_IMAGE_NEGATIVE_COLOR = new Color(6, 9, 255);
 	
 	public static ImageDetector fromDetectorImage(BufferedImage image)
 	{
@@ -145,22 +158,28 @@ public class ImageDetector {
 			}
 		}
 		
+		// top padding
 		for (int y = 0; y < ptop; ++y)
 		{
 			for (int x = 0; x < swidth; ++x)
-				negativePointsList.add(new Point(x, y));
+				negativePointsList.add(new Point(pleft + x, y));
 		}
+		
+		// bottom padding
 		for (int y = 0; y < pbottom; ++y)
 		{
 			for (int x = 0; x < swidth; ++x)
-				negativePointsList.add(new Point(x, ptop + sheight + y));
+				negativePointsList.add(new Point(pleft + x, ptop + sheight + y));
 		}
 		
+		// left padding
 		for (int x = 0; x < pleft; ++x)
 		{
 			for (int y = 0; y < ptop + sheight + pbottom; ++y)
 				negativePointsList.add(new Point(x, y));
 		}
+		
+		// right padding
 		for (int x = 0; x < pright; ++x)
 		{
 			for (int y = 0; y < ptop + sheight + pbottom; ++y)

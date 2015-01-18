@@ -1,7 +1,8 @@
 package net.awesomebox.papersthanks.documents.rulebook;
 
-import net.awesomebox.papersthanks.ui.ClickSequence;
-import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
+import net.awesomebox.papersthanks.ui.MouseSequence;
+import net.awesomebox.papersthanks.ui.MouseSequence.MouseClickEvent;
+import net.awesomebox.papersthanks.ui.MouseSequence.MouseEventListener;
 import net.awesomebox.papersthanks.ui.Interface;
 
 public abstract class RuleBookPage extends Interface
@@ -15,14 +16,11 @@ public abstract class RuleBookPage extends Interface
 	
 	
 	@Override
-	public ClickSequence clickTo()
-	{
-		return ruleBook.clickTo();
-	}
+	public abstract MouseSequence clickTo();
 	
 	@Override
-	public ClickEvent click(int xRelToDocument, int yRelToDocument, String desc)
+	public MouseClickEvent click(int xRelToDocument, int yRelToDocument, String desc, MouseEventListener mouseEventListener)
 	{
-		return ruleBook.click(xRelToDocument, yRelToDocument, desc);
+		return ruleBook.click(xRelToDocument, yRelToDocument, desc, mouseEventListener);
 	}
 }

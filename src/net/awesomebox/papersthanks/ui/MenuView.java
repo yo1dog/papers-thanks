@@ -2,7 +2,7 @@ package net.awesomebox.papersthanks.ui;
 
 import java.awt.Point;
 
-import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
+import net.awesomebox.papersthanks.ui.MouseSequence.MouseClickEvent;
 
 public class MenuView
 {
@@ -10,6 +10,6 @@ public class MenuView
 	
 	public static void clickResume()
 	{
-		VirtualUser.executeClickSequence(new ClickSequence(new ClickEvent(resumeOptionPoint.x, resumeOptionPoint.y, "Resume.")));
+		new MouseSequence(new MouseClickEvent(resumeOptionPoint.x, resumeOptionPoint.y, "Resume.")).execute();
 	}
 }

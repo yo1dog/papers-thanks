@@ -1,5 +1,7 @@
 package net.awesomebox.papersthanks;
 
+import net.awesomebox.papersthanks.ui.InterrogateItem.InterrogateItemSet;
+
 public enum Rule
 {
 	// from assets/Data/Days.csv:RULES row
@@ -52,6 +54,19 @@ public enum Rule
 			case "confiscate all arstotzkan passports"                         : return CONFISCATE_ARSTOTZKAN_PASSPORTS;
 			
 			default: return null;
+		}
+	}
+	
+	public static class RuleError extends EntryError
+	{
+		private static final long serialVersionUID = 1L;
+		
+		public final Rule rule;
+		
+		public RuleError(Rule rule, InterrogateItemSet interrogateItems)
+		{
+			super(rule + " rule violated.", interrogateItems);
+			this.rule = rule;
 		}
 	}
 }

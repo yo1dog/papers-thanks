@@ -6,7 +6,6 @@ import java.util.Date;
 import net.awesomebox.papersthanks.FingerPrint;
 import net.awesomebox.papersthanks.ui.Desk;
 import net.awesomebox.papersthanks.ui.WorkView;
-import net.awesomebox.papersthanks.utils.DateUtil;
 import net.awesomebox.papersthanks.utils.HeightUtil;
 import net.awesomebox.papersthanks.utils.WeightUtil;
 
@@ -39,7 +38,7 @@ public class IDSupplement extends Document
 		this.weightKG    = WeightUtil.parseHeight(weightStr);
 		this.description = description;
 		this.thumbPrint  = FingerPrint.fromImage(FingerPrint.Digit.THUMB, thumbPrintImage);
-		this.expDate     = DateUtil.parseDate(expDateStr);
+		this.expDate     = new Date();//DateUtil.parseDate(expDateStr);
 	}
 	
 	public boolean verify()

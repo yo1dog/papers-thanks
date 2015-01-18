@@ -5,7 +5,6 @@ import java.util.Date;
 import net.awesomebox.papersthanks.Nation;
 import net.awesomebox.papersthanks.Name;
 import net.awesomebox.papersthanks.ui.Desk;
-import net.awesomebox.papersthanks.utils.DateUtil;
 import net.awesomebox.papersthanks.utils.HeightUtil;
 import net.awesomebox.papersthanks.utils.WeightUtil;
 
@@ -36,7 +35,7 @@ public class ArstotzkanIDCard extends Document
 		
 		this.district = district;
 		this.name     = Name.fromFullName(nameStr);
-		this.dob      = DateUtil.parseDate(dobStr);
+		this.dob      = new Date();//DateUtil.parseDate(dobStr);
 		this.heightCM = HeightUtil.parseHeight(heightStr);
 		this.weightKG = WeightUtil.parseHeight(weightStr);
 	}

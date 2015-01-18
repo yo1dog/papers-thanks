@@ -2,7 +2,8 @@ package net.awesomebox.papersthanks.ui;
 
 import java.awt.image.BufferedImage;
 
-import net.awesomebox.papersthanks.ui.ClickSequence.ClickEvent;
+import net.awesomebox.papersthanks.ui.MouseSequence.MouseClickEvent;
+import net.awesomebox.papersthanks.ui.MouseSequence.MouseEventListener;
 
 public abstract class ItemOnDesk extends Interface
 {
@@ -25,21 +26,30 @@ public abstract class ItemOnDesk extends Interface
 		this.desk.addItemOnDesk(this);
 	}
 	
+	public final int getAbsoluteX(int xRelToItem)
+	{
+		return desk.getAbsoluteX(xRelToDesk + xRelToItem);
+	}
+	public final int getAbsoluteY(int yRelToItem)
+	{
+		return desk.getAbsoluteY(yRelToDesk + yRelToItem);
+	}
+	
 	// clicks to ensure the item is showing then clicks on the given point inside the item
 	@Override
-	public ClickSequence clickTo() 
+	public MouseSequence clickTo() 
 	{
-		return new ClickSequence(desk.clickToBringItemOnDeskToTop(this)); // click to make sure the item is on top
+		return new MouseSequence(desk.clickToBringItemOnDeskToTop(this)); // click to make sure the item is on top
 	}
 	
 	@Override
-	public ClickEvent click(int xRelToDocument, int yRelToDocument, String desc) 
+	public MouseClickEvent click(int xRelToItem, int yRelToItem, String desc, MouseEventListener mouseEventListener) 
 	{
-		return desk.clickItemOnDesk(this, xRelToDocument, yRelToDocument, desc);
+		return desk.clickItemOnDesk(this, xRelToItem, yRelToItem, desc, mouseEventListener);
 	}
 	
-	public BufferedImage takeSnapshot()
+	public BufferedImage takeScreenshot()
 	{
-		return desk.takeSnapshotOfItemOnDesk(this);
+		return desk.takeScreenshotOfItemOnDesk(this);
 	}
 }

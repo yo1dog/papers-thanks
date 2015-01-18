@@ -1,6 +1,6 @@
 package net.awesomebox.papersthanks.documents.rulebook;
 
-import net.awesomebox.papersthanks.ui.ClickSequence;
+import net.awesomebox.papersthanks.ui.MouseSequence;
 import net.awesomebox.papersthanks.ui.InterrogateItem;
 
 public class RuleBookWorkPassPage extends RuleBookPage
@@ -11,11 +11,11 @@ public class RuleBookWorkPassPage extends RuleBookPage
 	{
 		super(ruleBook);
 		
-		sealsInterrogateItem = new InterrogateItem(this, 180, 45,  "Rule book work pass page seals.");
+		sealsInterrogateItem = new InterrogateItem(this, ruleBook, 180, 45, "Rule book work pass page seals.");
 	}
 	
 	@Override
-	public ClickSequence clickTo()
+	public MouseSequence clickTo()
 	{
 		// click the work pass document link on the documents TOC page in the rule book
 		return ruleBook.documentsTOCPage.getLinkForDocumentLinkType(RuleBookDocumetLinkType.WORK_PASS).clickThrough();

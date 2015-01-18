@@ -1,6 +1,7 @@
 package net.awesomebox.papersthanks.documents.rulebook;
 
 import net.awesomebox.papersthanks.Nation;
+import net.awesomebox.papersthanks.Rule;
 import net.awesomebox.papersthanks.documents.Document;
 import net.awesomebox.papersthanks.ui.Desk;
 
@@ -84,9 +85,27 @@ public class RuleBook extends Document
 	}
 	
 	
-	public void readPages()
+	public void read()
 	{
 		rulesPage.readRules();
 		documentsTOCPage.readDocumentLinks();
+	}
+	
+	public Rule[] getRules()
+	{
+		return rulesPage.getRules();
+	}
+	
+	public boolean ruleInEffect(Rule rule)
+	{
+		Rule[] rules = rulesPage.getRules();
+		
+		for (int i = 0; i < rules.length; ++i)
+		{
+			if (rules[i] == rule)
+				return true;
+		}
+		
+		return false;
 	}
 }

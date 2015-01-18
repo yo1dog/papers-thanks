@@ -6,9 +6,12 @@ import net.awesomebox.papersthanks.ui.Interface.ClickPoint;
 // a type of click point that is specific to an item for an interrogation
 public class InterrogateItem extends ClickPoint
 {
-	public InterrogateItem(Interface _interface, int xRelToInterface, int yRelToInterface, String name)
+	public final ItemOnDesk parentItemOnDesk;
+	
+	public InterrogateItem(Interface _interface, ItemOnDesk parentItemOnDesk, int xRelToInterface, int yRelToInterface, String name)
 	{
 		super(_interface, xRelToInterface, yRelToInterface, name);
+		this.parentItemOnDesk = parentItemOnDesk;
 	}
 
 	public static class InterrogateItemSet

@@ -1,6 +1,6 @@
 package net.awesomebox.papersthanks.documents.rulebook;
 
-import net.awesomebox.papersthanks.ui.ClickSequence;
+import net.awesomebox.papersthanks.ui.MouseSequence;
 import net.awesomebox.papersthanks.ui.InterrogateItem;
 
 public class RuleBookVaccineCertPage extends RuleBookPage
@@ -11,11 +11,11 @@ public class RuleBookVaccineCertPage extends RuleBookPage
 	{
 		super(ruleBook);
 		
-		requiredRuleInterrogateItem = new InterrogateItem(this, 180, 45,  "Rule book vaccine cert page required rule.");
+		requiredRuleInterrogateItem = new InterrogateItem(this, ruleBook, 180, 45, "Rule book vaccine cert page required rule.");
 	}
 	
 	@Override
-	public ClickSequence clickTo()
+	public MouseSequence clickTo()
 	{
 		// click the vaccine cert document link on the documents TOC page in the rule book
 		return ruleBook.documentsTOCPage.getLinkForDocumentLinkType(RuleBookDocumetLinkType.VACCINE_CERT).clickThrough();

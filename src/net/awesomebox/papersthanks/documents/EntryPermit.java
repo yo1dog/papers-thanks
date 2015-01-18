@@ -7,7 +7,6 @@ import net.awesomebox.papersthanks.Name;
 import net.awesomebox.papersthanks.Purpose;
 import net.awesomebox.papersthanks.ui.Desk;
 import net.awesomebox.papersthanks.ui.WorkView;
-import net.awesomebox.papersthanks.utils.DateUtil;
 
 public class EntryPermit extends Document
 {
@@ -38,7 +37,7 @@ public class EntryPermit extends Document
 		this.passportID  = passportID;
 		this.purpose     = Purpose.fromString(purposeStr);
 		this.duration    = Duration.fromString(durationStr);
-		this.enterByDate = DateUtil.parseDate(enterByDateStr);
+		this.enterByDate = new Date();//DateUtil.parseDate(enterByDateStr);
 	}
 	
 	

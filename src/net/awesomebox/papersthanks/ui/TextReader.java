@@ -4,37 +4,123 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
+import net.awesomebox.papersthanks.ImageDetector;
 import net.awesomebox.papersthanks.ui.Font.FontChar;
 
 public class TextReader
 {
-	public static String readTextNear(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin)
+	public static final int DEFAULT_SQR_DIST   = 6;
+	public static final int DEFAULT_MIN_LENGTH = 2;
+	public static final int DEFAULT_TOLLERANCE = ImageDetector.DEFAULT_TOLERANCE;
+	
+	public static final String ALPHA_UPPER_CHAR_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public static final String ALPHA_LOWER_CHAR_SET = "abcdefghijklmnopqrstuvwxyz";
+	public static final String NUMERIC_CHAR_SET     = "0123456789";
+	
+	public static final String ALPHA_CHAR_SET         = ALPHA_UPPER_CHAR_SET + ALPHA_LOWER_CHAR_SET;
+	public static final String ALPHA_NUMERIC_CHAR_SET = ALPHA_CHAR_SET + NUMERIC_CHAR_SET;
+	
+	
+	private final Font    font;
+	private final Color[] foregroundColors;
+	private final Color[] backgroundColors;
+	
+	private int     lineSpacing;
+	private boolean isRightAligned;
+	private String  firstCharSet;
+	private int     tollerance;
+	
+	public TextReader(Font font, Color foregroundColor, Color backgroundColor)
 	{
-		return readTextNear(font, image, foregroundColor, backgroundColor, origin, 20, true);
+		this(font, new Color[] {foregroundColor}, new Color[] {backgroundColor});
 	}
-	public static String readTextNear(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin, boolean firstAlphaCapitalsOnly)
+	public TextReader(Font font, Color[] foregroundColors, Color[] backgroundColors)
 	{
-		return readTextNear(font, image, foregroundColor, backgroundColor, origin, 20, firstAlphaCapitalsOnly);
+		this(font, foregroundColors, backgroundColors, -1, false, null);
 	}
-	public static String readTextNear(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin, int sqrDist)
+	public TextReader(Font font, Color foregroundColor, Color backgroundColor, int lineSpacing, boolean isRightAligned, String firstCharSet)
 	{
-		return readTextNear(font, image, foregroundColor, backgroundColor, origin, sqrDist, true);
+		this(font, new Color[] {foregroundColor}, new Color[] {backgroundColor}, lineSpacing, isRightAligned, firstCharSet);
 	}
-	public static String readTextNear(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin, int sqrDist, boolean firstAlphaCapitalsOnly)
+	public TextReader(Font font, Color[] foregroundColors, Color[] backgroundColors, int lineSpacing, boolean isRightAligned, String firstCharSet)
+	{
+		this(font, foregroundColors, backgroundColors, lineSpacing, isRightAligned, firstCharSet, DEFAULT_TOLLERANCE);
+	}
+	public TextReader(Font font, Color foregroundColor, Color backgroundColor, int lineSpacing, boolean isRightAligned, String firstCharSet, int tollerance)
+	{
+		this(font, new Color[] {foregroundColor}, new Color[] {backgroundColor}, lineSpacing, isRightAligned, firstCharSet, tollerance);
+	}
+	public TextReader(Font font, Color[] foregroundColors, Color[] backgroundColors, int lineSpacing, boolean isRightAligned, String firstCharSet, int tollerance)
+	{
+		this.font             = font;
+		this.foregroundColors = foregroundColors;
+		this.backgroundColors = backgroundColors;
+		this.lineSpacing      = lineSpacing;
+		this.isRightAligned   = isRightAligned;
+		this.firstCharSet     = firstCharSet;
+		this.tollerance       = tollerance;
+	}
+	
+	public TextReader setLineSpacing (int     lineSpacing   ) {this.lineSpacing    = lineSpacing;    return this;}
+	public TextReader setRightAligned(boolean isRightAligned) {this.isRightAligned = isRightAligned; return this;}
+	public TextReader setFirstCharSet(String  firstCharSet  ) {this.firstCharSet   = firstCharSet;   return this;}
+	public TextReader setTollerance  (int  tollerance       ) {this.tollerance     = tollerance;     return this;}
+	
+	
+	public String readText(BufferedImage image, Point origin, int scale)
+	{
+		if (lineSpacing > -1)
+			return readMultiLineText(image, origin, scale);
+		else
+			return readSingleLineText(image, origin, scale);
+	}
+	
+	
+	public String readTextNear(BufferedImage image, Point origin, int scale)
+	{
+		return readTextNear(image, origin, scale, DEFAULT_MIN_LENGTH, DEFAULT_SQR_DIST);
+	}
+	public String readTextNear(BufferedImage image, Point origin, int scale, int minLength)
+	{
+		return readTextNear(image, origin, scale, minLength, DEFAULT_SQR_DIST);
+	}
+	public String readTextNear(BufferedImage image, Point origin, int scale, int minLength, int sqrDist)
+	{
+		return readTextNear(image, origin, scale, minLength, sqrDist, sqrDist);
+	}
+	public String readTextNear(BufferedImage image, Point origin, int scale, int minLength, int width, int height)
 	{
 		// try the origin first
-		String str = readMultiLineText(font, image, foregroundColor, backgroundColor, origin, firstAlphaCapitalsOnly);
-		if (str.length() > 1)
+		String str = readText(image, origin, scale);
+		if (str.length() >= minLength)
 			return str;
 		
-		for (int yOffset = 0; yOffset < sqrDist; ++yOffset)
+		for (int yOffset = 0; yOffset < height; ++yOffset)
 		{
-			for (int xOffset = 0; xOffset < sqrDist; ++xOffset)
+			int startXOffset;
+			int endingXOffset;
+			int dXOffset;
+			
+			// travel right to left if we are right aligned
+			if (isRightAligned)
 			{
-				Point newOrigin = new Point(origin.x + xOffset - (sqrDist / 2), origin.y + yOffset - (sqrDist / 2));
+				startXOffset  = width - 1;
+				endingXOffset = -1;
+				dXOffset      = -1;
+			}
+			else
+			{
+				startXOffset  = 0;
+				endingXOffset = width;
+				dXOffset      = 1;
+			}
+			
+			for (int xOffset = startXOffset; xOffset != endingXOffset; xOffset += dXOffset)
+			{
+				Point newOrigin = new Point(origin.x + xOffset - (width / 2), origin.y + yOffset - (height / 2));
 				
-				str = readMultiLineText(font, image, foregroundColor, backgroundColor, newOrigin, firstAlphaCapitalsOnly);
-				if (str.length() > 1)
+				str = readText(image, newOrigin, scale);
+				if (str.length() >= minLength)
 				{
 					origin.x = newOrigin.x;
 					origin.y = newOrigin.y;
@@ -47,47 +133,12 @@ public class TextReader
 		return "";
 	}
 	
-	public static String readMultiLineText(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin)
-	{
-		return readSingleLineText(font, image, foregroundColor, backgroundColor, origin, true);
-	}
-	public static String readMultiLineText(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin, boolean firstAlphaCapitalsOnly)
-	{
-		String str = readSingleLineText(font, image, foregroundColor, backgroundColor, origin, firstAlphaCapitalsOnly);
-		
-		if (str.length() == 0)
-			return str;
-		
-		// find the y offset between lines
-		int yOffsetBetweenLines = -1;
-		
-		String nextLine = "";
-		int yOffset;
-		
-		for (yOffset = font.lineHeight; yOffset < font.lineHeight * 2; ++yOffset)
-		{
-			nextLine = readSingleLineText(font, image, foregroundColor, backgroundColor, new Point(origin.x, origin.y + yOffset), false);
-			
-			if (nextLine.length() > 0)
-				break;
-		}
-		
-		while(nextLine.length() > 0)
-		{
-			str += ' ' + nextLine;
-			origin = new Point(origin.x, origin.y + yOffset);
-			
-			nextLine = readSingleLineText(font, image, foregroundColor, backgroundColor, new Point(origin.x, origin.y + yOffsetBetweenLines), false);
-		}
-		
-		return str;
-	}
 	
-	public static String readSingleLineText(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin)
+	private String readSingleLineText(BufferedImage image, Point origin, int scale)
 	{
-		return readSingleLineText(font, image, foregroundColor, backgroundColor, origin, true);
+		return readSingleLineText(image, origin, scale, false);
 	}
-	public static String readSingleLineText(Font font, BufferedImage image, Color foregroundColor, Color backgroundColor, Point origin, boolean firstAlphaCapitalsOnly)
+	private String readSingleLineText(BufferedImage image, Point origin, int scale, boolean ignoreFirstCharSet)
 	{
 		String str = "";
 		
@@ -97,39 +148,52 @@ public class TextReader
 		if (x < 0 || y < 0)
 			return str;
 		
-		boolean triedSpace = false;
+		boolean tryingSpace = false;
 		FontChar lastChar = null;
 		
 		while (true)
 		{
 			FontChar foundFontChar = null;
 			
-			int firstIndex = 0;
-			int lastIndex = font.chars.length - 1;
-			
-			if (lastChar == null && firstAlphaCapitalsOnly)
-			{
-				firstIndex = font.getCharIndex('A');
-				lastIndex  = font.getCharIndex('Z');
-			}
-			
-			for (int i = firstIndex; i <= lastIndex; ++i)
+			for (int i = 0; i <= font.chars.length - 1; ++i)
 			{
 				FontChar fontChar = font.chars[i];
 				if (fontChar == null)
 					continue;
 				
-				if (i == font.getCharIndex('t'))
+				if (lastChar == null && firstCharSet != null && !ignoreFirstCharSet)
 				{
-					int z = 2;
+					if (firstCharSet.indexOf(fontChar.value) == -1)
+						continue;
 				}
 				
-				if (fontChar.imageDetector.checkImage(
+				int charX;
+				int charY = y;
+				
+				if (isRightAligned)
+				{
+					charX = x - fontChar.xAdvance;
+					
+					if (tryingSpace)
+						charX -= fontChar.xSpaceAdvance;
+				}
+				else
+				{
+					charX = x;
+					
+					if (tryingSpace)
+						charX += lastChar.xSpaceAdvance;
+				}
+				
+				boolean matched = fontChar.imageDetector.checkImage(
 					image,
-					x, y + font.ascenderLine,
-					2.0f,
-					new Color[] {foregroundColor}, new Color[] {backgroundColor})
-				)
+					foregroundColors, backgroundColors,
+					new Point(charX - 1, charY + font.ascenderLine), // always subtract 1 because we always add 1 padding to the left for left-aligned reading
+					scale,
+					tollerance
+				);
+				
+				if (matched)
 				{
 					foundFontChar = fontChar;
 					break;
@@ -138,30 +202,66 @@ public class TextReader
 			
 			if (foundFontChar != null)
 			{
-				if (triedSpace)
+				if (tryingSpace)
 				{
-					str += ' ';
-					triedSpace = false;
+					tryingSpace = false;
+					
+					if (isRightAligned)
+					{
+						x -= foundFontChar.xSpaceAdvance;
+						str = ' ' + str;
+					}
+					else
+					{
+						x += lastChar.xSpaceAdvance;
+						str += ' ';
+					}
 				}
 				
-				str += foundFontChar.value;
-				x += foundFontChar.xAdvance;
+				if (isRightAligned)
+				{
+					x -= foundFontChar.xAdvance;
+					str = foundFontChar.value + str;
+				}
+				else
+				{
+					x += foundFontChar.xAdvance;
+					str += foundFontChar.value;
+				}
 				
 				lastChar = foundFontChar;
 				continue;
 			}
 			
-			if (!triedSpace && lastChar != null)
+			if (!tryingSpace && lastChar != null && font.hasSpace)
 			{
-				triedSpace = true;
-				
-				int lastCharTrailingSpace = lastChar.xAdvance - (lastChar.xOffset + lastChar.width);
-				x += font.spaceXAdvance - lastCharTrailingSpace;
-				
+				tryingSpace = true;
 				continue;
 			}
 			
 			break;
+		}
+		
+		return str;
+	}
+	
+	private String readMultiLineText(BufferedImage image, Point origin, int scale)
+	{
+		String str = readSingleLineText(image, origin, scale);
+		
+		if (str.length() == 0)
+			return str;
+		
+		Point nextLineOrigin = new Point(origin.x, origin.y);
+		while(true)
+		{
+			nextLineOrigin.y += font.lineHeight + lineSpacing;
+			String nextLine = readSingleLineText(image, nextLineOrigin, scale, true);
+			
+			if (nextLine.length() == 0)
+				break;
+			
+			str += ' ' + nextLine;
 		}
 		
 		return str;

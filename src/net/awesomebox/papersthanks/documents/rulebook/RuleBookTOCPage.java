@@ -1,6 +1,6 @@
 package net.awesomebox.papersthanks.documents.rulebook;
 
-import net.awesomebox.papersthanks.ui.ClickSequence;
+import net.awesomebox.papersthanks.ui.MouseSequence;
 
 public class RuleBookTOCPage extends RuleBookPage
 {
@@ -22,7 +22,7 @@ public class RuleBookTOCPage extends RuleBookPage
 	}
 	
 	@Override
-	public ClickSequence clickTo()
+	public MouseSequence clickTo()
 	{
 		// click TOC link
 		return ruleBook.tocLink.clickThrough();                 
